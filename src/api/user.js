@@ -7,3 +7,6 @@ export const userRegisterService = ({ username, password, repassword }) =>
 //  登录接口
 export const userLoginService = ({ username, password, repassword }) =>
   request.post('/api/login', { username, password, repassword })
+
+// 获取用户的基本信息
+export const userGetInfoService = () => request.get('/my/userinfo')

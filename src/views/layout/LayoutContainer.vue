@@ -10,6 +10,36 @@ import {
   CaretBottom
 } from '@element-plus/icons-vue'
 import avatar from '@/assets/default.png'
+import { useUserStore } from '@/stores'
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+const userStore = useUserStore()
+const router = useRouter()
+
+onMounted(() => {
+  userStore.getUser()
+})
+
+const handleCommand = (key) => {
+  if (key === 'logout') {
+    //  退出
+    ElMessageBox.confirm('您确认要退出吗？', '温馨提示', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(() => {
+        ElMessage.success('退出成功')
+        router.push('/login')
+        userStore.removeToken()
+        userStore.removeUser()
+      })
+      .catch(() => {})
+  } else {
+    // 跳转
+    router.push(`/user/${key}`)
+  }
+}
 </script>
 
 <template>
@@ -55,12 +85,19 @@ import avatar from '@/assets/default.png'
     </el-aside>
     <el-container>
       <el-header>
-        <div>黑马程序员：<strong>小帅鹏</strong></div>
-        <el-dropdown placement="bottom-end">
+        <div>
+          黑马程序员：<strong>{{
+            userStore.user.nickname || userStore.user.username
+          }}</strong>
+        </div>
+        <!-- 下拉菜单 -->
+        <el-dropdown placement="bottom-end" @command="handleCommand">
+          <!-- 展示给用户默认看到的 -->
           <span class="el-dropdown__box">
-            <el-avatar :src="avatar" />
+            <el-avatar :src="userStore.user.user_pic || avatar" />
             <el-icon><CaretBottom /></el-icon>
           </span>
+          <!-- 折叠的下拉部分 -->
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item command="profile" :icon="User"
