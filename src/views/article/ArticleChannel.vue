@@ -1,6 +1,6 @@
 <script setup>
 import { Edit, Delete } from '@element-plus/icons-vue'
-import { artGetChannelsService } from '@/api/article'
+import { artGetChannelsService, artDelChannelService } from '@/api/article'
 import { ref } from 'vue'
 import ChannelEdit from './components/ChannelEdit.vue'
 
@@ -26,8 +26,15 @@ const onEditChannel = (row) => {
 }
 
 // 删除分类
-const onDelChannel = (row, $index) => {
-  console.log(row, $index)
+const onDelChannel = async (row) => {
+  await ElMessageBox.confirm('您确认要删除该分类吗？', '温馨提示', {
+    type: 'warning',
+    confirmButtonText: '确认',
+    cancelButtonText: '取消'
+  })
+  await artDelChannelService(row.id)
+  ElMessage.success('删除成功')
+  getChannelList()
 }
 
 // 添加 / 编辑成功，刷新列表
