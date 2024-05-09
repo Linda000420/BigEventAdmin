@@ -29,6 +29,11 @@ const onEditChannel = (row) => {
 const onDelChannel = (row, $index) => {
   console.log(row, $index)
 }
+
+// 添加 / 编辑成功，刷新列表
+const onSuccess = () => {
+  getChannelList()
+}
 </script>
 
 <template>
@@ -66,7 +71,7 @@ const onDelChannel = (row, $index) => {
       </template>
     </el-table>
 
-    <channel-edit ref="dialog"></channel-edit>
+    <channel-edit ref="dialog" @success="onSuccess"></channel-edit>
   </page-container>
 </template>
 

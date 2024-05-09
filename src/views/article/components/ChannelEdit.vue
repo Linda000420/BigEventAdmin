@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue'
+import { artAddChannelService, artEditChannelService } from '@/api/article'
 const dialogVisible = ref(false)
+const formRef = ref()
 const formModel = ref({
   cate_name: '',
   cate_alias: ''
@@ -30,6 +32,23 @@ const open = (row) => {
   formModel.value = { ...row } //  添加：重置表单内容，编辑：存储需要回显的数据
 }
 
+const emit = defineEmits(['success'])
+
+// 确认按钮
+const onSubmit = async () => {
+  await formRef.value.validate()
+  const isEdit = formModel.value.id
+  if (isEdit) {
+    await artEditChannelService(formModel.value)
+    ElMessage.success('编辑成功')
+  } else {
+    await artAddChannelService(formModel.value)
+    ElMessage.success('添加成功')
+  }
+  dialogVisible.value = false
+  emit('success')
+}
+
 // 向外暴露
 defineExpose({
   open
@@ -43,6 +62,7 @@ defineExpose({
     width="30%"
   >
     <el-form
+      ref="formRef"
       :model="formModel"
       :rules="rules"
       label-width="100px"
@@ -62,9 +82,7 @@ defineExpose({
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">
-          确认
-        </el-button>
+        <el-button type="primary" @click="onSubmit"> 确认 </el-button>
       </div>
     </template>
   </el-dialog>
