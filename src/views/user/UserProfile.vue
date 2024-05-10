@@ -2,10 +2,12 @@
 import PageContainer from '@/components/PageContainer.vue'
 import { ref } from 'vue'
 import { useUserStore } from '@/stores'
+import { userUpdateInfoService } from '@/api/user'
 
 const formRef = ref()
 const {
-  user: { email, id, nickname, username }
+  user: { email, id, nickname, username },
+  getUser
 } = useUserStore()
 
 const form = ref({
@@ -34,8 +36,12 @@ const rules = {
   ]
 }
 
-const submitForm = () => {
-  console.log(123)
+const submitForm = async () => {
+  // 等待校验结果
+  await formRef.value.validate()
+  await userUpdateInfoService(form.value)
+  ElMessage.success('更新成功')
+  getUser()
 }
 </script>
 

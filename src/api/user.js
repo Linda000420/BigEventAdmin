@@ -10,3 +10,6 @@ export const userLoginService = ({ username, password, repassword }) =>
 
 // 获取用户的基本信息
 export const userGetInfoService = () => request.get('/my/userinfo')
+
+// 更新用户基本资料
+export const userUpdateInfoService = (data) => request.put('/my/userinfo', data)
