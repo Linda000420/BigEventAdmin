@@ -65,6 +65,16 @@ const onEditArticle = (row) => {
   articleEditRef.value.open(row)
 }
 
+// 添加 / 编辑成功回调
+const onSuccess = (type) => {
+  if (type === 'add') {
+    // 添加渲染最后一页
+    const lastPage = Math.ceil((total.value + 1) / params.value.pagesize)
+    params.value.pagenum = lastPage
+  }
+  getArticleList()
+}
+
 // 删除文章
 const onDelArticle = (row) => {
   console.log(row)
@@ -142,7 +152,7 @@ const onDelArticle = (row) => {
     />
 
     <!-- 抽屉 -->
-    <article-edit ref="articleEditRef"></article-edit>
+    <article-edit ref="articleEditRef" @success="onSuccess"></article-edit>
   </page-container>
 </template>
 
