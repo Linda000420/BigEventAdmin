@@ -1,5 +1,6 @@
 <script setup>
 import ChannelSelect from './components/ChannelSelect.vue'
+import ArticleEdit from './components/ArticleEdit.vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { artGetListService } from '@/api/article'
@@ -53,9 +54,15 @@ const onReset = () => {
   getArticleList()
 }
 
+const articleEditRef = ref()
+// 添加文章
+const onAddArticle = () => {
+  articleEditRef.value.open({})
+}
+
 // 编辑文章
 const onEditArticle = (row) => {
-  console.log(row)
+  articleEditRef.value.open(row)
 }
 
 // 删除文章
@@ -67,7 +74,7 @@ const onDelArticle = (row) => {
 <template>
   <page-container title="文章管理">
     <template #extra>
-      <el-button type="primary">添加文章</el-button>
+      <el-button @click="onAddArticle" type="primary"> 添加文章 </el-button>
     </template>
 
     <!-- 表单 -->
@@ -76,7 +83,7 @@ const onDelArticle = (row) => {
         <channel-select v-model="params.cate_id"></channel-select>
       </el-form-item>
       <el-form-item label="发布状态">
-        <el-select v-model="params.state" style="width: 250px">
+        <el-select v-model="params.state">
           <el-option label="已发布" value="已发布"></el-option>
           <el-option label="草稿" value="草稿"></el-option>
         </el-select>
@@ -133,7 +140,14 @@ const onDelArticle = (row) => {
       @current-change="onCurrentChange"
       style="margin-top: 20px; justify-content: flex-end"
     />
+
+    <!-- 抽屉 -->
+    <article-edit ref="articleEditRef"></article-edit>
   </page-container>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.el-select {
+  width: 250px;
+}
+</style>

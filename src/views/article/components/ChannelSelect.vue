@@ -21,7 +21,6 @@ getChannelList()
   <el-select
     :modelValue="modelValue"
     @update:modelValue="emit('update:modelValue', $event)"
-    style="width: 250px"
   >
     <el-option
       v-for="channel in channelList"
