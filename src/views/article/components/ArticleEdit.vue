@@ -1,10 +1,15 @@
 <script setup>
 import { ref, nextTick } from 'vue'
 import ChannelSelect from './ChannelSelect.vue'
-import { artAddArticleService } from '@/api/article'
+import {
+  artAddArticleService,
+  artGetArticleInfoService,
+  artEditArticleService
+} from '@/api/article'
 import { Plus } from '@element-plus/icons-vue'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import { baseURL } from '@/utils/request'
 // 控制抽屉显示隐藏
 const visibileDraw = ref(false)
 
@@ -21,11 +26,14 @@ const defaultForm = ref({
 const formModel = ref({ ...defaultForm.value })
 const editorRef = ref()
 
-const open = (row) => {
+const open = async (row) => {
   visibileDraw.value = true //  显示抽屉
 
   if (row.id) {
     //  基于 id 发送请求，获取编辑对应的详情数据进行回显
+    const res = await artGetArticleInfoService(row.id)
+    formModel.value = res.data.data
+    imgUrl.value = baseURL + formModel.value.cover_img
   } else {
     // 重置
     formModel.value = {
@@ -59,7 +67,11 @@ const onPublish = async (state) => {
   }
   if (formModel.value.id) {
     // 编辑
-    console.log(123)
+    const res = await artEditArticleService(fd)
+    ElMessage.success(res.data.message)
+    visibileDraw.value = false
+    // 通知父组件
+    emit('success', 'edit')
   } else {
     // 新增
     const res = await artAddArticleService(fd)

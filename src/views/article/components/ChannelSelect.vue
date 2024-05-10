@@ -5,6 +5,9 @@ import { artGetChannelsService } from '@/api/article'
 defineProps({
   modelValue: {
     type: [Number, String]
+  },
+  width: {
+    type: String
   }
 })
 
@@ -21,6 +24,7 @@ getChannelList()
   <el-select
     :modelValue="modelValue"
     @update:modelValue="emit('update:modelValue', $event)"
+    :style="{ width }"
   >
     <el-option
       v-for="channel in channelList"
