@@ -1,4 +1,5 @@
 <script setup>
+import ChannelSelect from './components/ChannelSelect.vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 const articleList = ref([
@@ -17,6 +18,13 @@ const articleList = ref([
     cate_name: '体育'
   }
 ])
+// 定义请求参数对象
+const params = ref({
+  pagenum: 1,
+  pagesize: 5,
+  cate_id: '',
+  state: ''
+})
 
 // 编辑文章
 const onEditArticle = (row) => {
@@ -38,13 +46,10 @@ const onDelArticle = (row) => {
     <!-- 表单 -->
     <el-form inline>
       <el-form-item label="文章分类">
-        <el-select style="width: 250px">
-          <el-option label="学习" value="100"></el-option>
-          <el-option label="新闻" value="110"></el-option>
-        </el-select>
+        <channel-select v-model="params.cate_id"></channel-select>
       </el-form-item>
       <el-form-item label="发布状态">
-        <el-select style="width: 250px">
+        <el-select v-model="params.state" style="width: 250px">
           <el-option label="已发布" value="已发布"></el-option>
           <el-option label="草稿" value="草稿"></el-option>
         </el-select>
