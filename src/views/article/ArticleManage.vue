@@ -2,29 +2,56 @@
 import ChannelSelect from './components/ChannelSelect.vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-const articleList = ref([
-  {
-    id: 5961,
-    title: '新的文章啊',
-    pub_date: '2022-07-10 14:53:52.604',
-    state: '已发布',
-    cate_name: '体育'
-  },
-  {
-    id: 5962,
-    title: '新的文章啊',
-    pub_date: '2022-07-10 14:54:30.904',
-    state: '草稿',
-    cate_name: '体育'
-  }
-])
+import { artGetListService } from '@/api/article'
+import { formatTime } from '@/utils/format'
+
+const articleList = ref([]) //  文章列表
+const total = ref(0) //  总条数
+const loading = ref(false) //  loading状态
 // 定义请求参数对象
 const params = ref({
-  pagenum: 1,
-  pagesize: 5,
+  pagenum: 1, //  当前页
+  pagesize: 5, //  当前显示的每页条数
   cate_id: '',
   state: ''
 })
+
+// 获取文章列表
+const getArticleList = async () => {
+  loading.value = true
+  const res = await artGetListService(params.value)
+  articleList.value = res.data.data
+  total.value = res.data.total
+  loading.value = false
+}
+getArticleList()
+
+// 选择显示条数
+const onSizeChange = (size) => {
+  params.value.pagenum = 1
+  params.value.pagesize = size
+  getArticleList()
+}
+
+// 跳转页数
+const onCurrentChange = (page) => {
+  params.value.pagenum = page
+  getArticleList()
+}
+
+// 搜索文章
+const onSearch = () => {
+  params.value.pagenum = 1 //  重置页
+  getArticleList()
+}
+
+// 重置搜索
+const onReset = () => {
+  params.value.pagenum = 1 //  重置页
+  params.value.cate_id = ''
+  params.value.state = ''
+  getArticleList()
+}
 
 // 编辑文章
 const onEditArticle = (row) => {
@@ -55,20 +82,24 @@ const onDelArticle = (row) => {
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">搜索</el-button>
-        <el-button>重置</el-button>
+        <el-button @click="onSearch" type="primary">搜索</el-button>
+        <el-button @click="onReset">重置</el-button>
       </el-form-item>
     </el-form>
 
     <!-- 表格 -->
-    <el-table :data="articleList">
+    <el-table :data="articleList" v-loading="loading">
       <el-table-column label="文章标题" prop="title" width="250px">
         <template #default="{ row }">
           <el-link type="primary" :underline="false">{{ row.title }}</el-link>
         </template>
       </el-table-column>
       <el-table-column label="分类" prop="cate_name"></el-table-column>
-      <el-table-column label="发布时间" prop="pub_date"></el-table-column>
+      <el-table-column label="发布时间" prop="pub_date">
+        <template #default="{ row }">
+          {{ formatTime(row.pub_date) }}
+        </template>
+      </el-table-column>
       <el-table-column label="状态" prop="state"></el-table-column>
       <el-table-column label="操作" width="150px">
         <template #default="{ row }">
@@ -89,6 +120,19 @@ const onDelArticle = (row) => {
         </template>
       </el-table-column>
     </el-table>
+
+    <!-- 分页 -->
+    <el-pagination
+      v-model:current-page="params.pagenum"
+      v-model:page-size="params.pagesize"
+      :page-sizes="[2, 3, 5, 10]"
+      :background="true"
+      layout="jumper, total, sizes, prev, pager, next"
+      :total="total"
+      @size-change="onSizeChange"
+      @current-change="onCurrentChange"
+      style="margin-top: 20px; justify-content: flex-end"
+    />
   </page-container>
 </template>
 
